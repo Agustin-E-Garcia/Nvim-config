@@ -22,3 +22,5 @@ vim.o.list = true
 vim.opt.listchars = { tab = '> ', trail = '-', nbsp = '_' }
 
 vim.o.scrolloff = 10
+
+vim.o.completeopt = "menuone,noinsert,noselect"

@@ -16,6 +16,7 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 -- Search files
 map('n', '<leader><leader>', '<cmd>Telescope buffers<cr>', opts)
 map('n', '<leader>sg', '<cmd>Telescope git_files<cr>', opts)
+map('n', '<leader>sf', '<cmd>Telescope find_files<cr>', opts)
 map('n', '<leader>sd', '<cmd>Telescope diagnostics<cr>', opts)
 
 -- LSP related on attach

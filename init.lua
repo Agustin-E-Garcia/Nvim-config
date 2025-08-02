@@ -5,6 +5,7 @@ vim.g.maplocalleader = ' '
 -- Load core modules
 require('options')
 require('keymaps')
+require('UnrealCommands')
 
 -- Load plugins
 require ('plugins')

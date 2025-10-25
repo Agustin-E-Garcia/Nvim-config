@@ -22,6 +22,6 @@ cmp.setup({
 })
 
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
-require('lspconfig')['clangd'].setup { capabilities = capabilities }
-require('lspconfig')['omnisharp'].setup { capabilities = capabilities }
-require('lspconfig')['lua_ls'].setup { capabilities = capabilities }
+vim.lsp.config('clangd', { capabilities = capabilities })
+vim.lsp.config('omnisharp', { capabilities = capabilities })
+vim.lsp.config('lua_ls', { capabilities = capabilities })

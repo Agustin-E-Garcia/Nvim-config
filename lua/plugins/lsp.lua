@@ -3,6 +3,7 @@ require("mason").setup()
 vim.lsp.config('clangd', {});
 vim.lsp.config('omnisharp', {});
 vim.lsp.config('lua_ls', { settings = { Lua = { diagnostics = { globals = { "vim" } } } } })
+vim.lsp.config('qmlls', {});
 
 local fileType_to_server =
 {
@@ -10,6 +11,7 @@ local fileType_to_server =
     cpp = "clangd",
     cs = "omnisharp",
     lua = "lua_ls",
+    qml = "qmlls",
 }
 
 vim.api.nvim_create_autocmd("FileType",

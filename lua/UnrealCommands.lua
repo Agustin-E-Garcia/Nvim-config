@@ -1,17 +1,6 @@
-local GetUProject = function()
-    local matches = vim.fn.glob("*.uproject", false, true)
-    if #matches == 0 then
-        print("no .uproject file found in current directory")
-    else
-        return matches[1]
-    end
-end, {}
-
-
 vim.api.nvim_create_user_command('UECompile', function()
     local cwd = vim.fn.getcwd()
 
-    -- Find first .uproject file
     local matches = vim.fn.glob("*.uproject", false, true)
     if #matches == 0 then
         print("No .uproject file found in current directory.")
@@ -20,44 +9,66 @@ vim.api.nvim_create_user_command('UECompile', function()
 
     local uproject_file = matches[1]
     local project_path = cwd .. "/" .. uproject_file
-    local project_name = uproject_file:gsub("%.uproject$", "") -- Strip ".uproject"
+    local project_name = uproject_file:gsub("%.uproject$", "")
 
     local engine_path = "/home/Agustin/extra/GameDev/Unreal/UnrealEngine-git/Engine/Build/BatchFiles/Linux/Build.sh"
 
-    -- Build command
+    -- Fast build: skip UHT/codegen for quick iteration
     local build_cmd = string.format(
         "%s -mode=GenerateClangDatabase -NoExecCodeGenActions -project=\"%s\" %sEditor Linux Development",
         engine_path, project_path, project_name
     )
 
-    -- Path to generated compile_commands.json
+    -- Copy compile_commands.json for LSP
     local src_compile_db = "/home/Agustin/extra/GameDev/Unreal/UnrealEngine-git/compile_commands.json"
-    -- Destination: project root (same folder as .uproject)
     local dst_compile_db = string.format("%s/compile_commands.json", cwd)
 
-    -- Chain the build and copy
     local cmd = string.format("%s && cp %s %s", build_cmd, src_compile_db, dst_compile_db)
 
     vim.cmd("split | terminal " .. cmd)
 end, {
     nargs = 0,
-    desc = 'Generate clang compile_commands.json for the .uproject in current dir and copy it to project root',
+    desc = 'Fast compile (no UHT) for coding in nvim',
 })
 
-vim.api.nvim_create_user_command('UEditor', function()
+vim.api.nvim_create_user_command('UERun', function()
     local cwd = vim.fn.getcwd()
-    local uproject_file = GetUProject()
-    local project_path = cwd .. "/" .. uproject_file
 
-    local engine_path = "/home/Agustin/extra/GameDev/Unreal/UnrealEngine-git/Engine/Binaries/Linux/UnrealEditor"
+    local matches = vim.fn.glob("*.uproject", false, true)
+    if #matches == 0 then
+        print("No .uproject file found in current direct:ory.")
+        return
+    end
+
+    local uproject_file = matches[1]
+    local project_path = cwd .. "/" .. uproject_file
+    local project_name = uproject_file:gsub("%.uproject$", "")
+
+    local engine_path = "/home/Agustin/extra/GameDev/Unreal/UnrealEngine-git/Engine/Build/BatchFiles/Linux/Build.sh"
+    local editor_path = "/home/Agustin/extra/GameDev/Unreal/UnrealEngine-git/Engine/Binaries/Linux/UnrealEditor"
     local dxc_path = "/home/Agustin/extra/GameDev/Unreal/UnrealEngine-git/Engine/Extras/ThirdPartyNotUE/DirectXShaderCompiler/bin"
 
-    local cmd = string.format(
-        'env LD_LIBRARY_PATH="%s:$LD_LIBRARY_PATH" %q %q &',
-        dxc_path,
-        engine_path,
-        project_path
+    -- Full build with UHT
+    local build_cmd = string.format(
+        "%s -project=\"%s\" %sEditor Linux Development",
+        engine_path, project_path, project_name
     )
 
-    os.execute(cmd)
-end, {})
+    local src_compile_db = "/home/Agustin/extra/GameDev/Unreal/UnrealEngine-git/compile_commands.json"
+    local dst_compile_db = string.format("%s/compile_commands.json", cwd)
+
+    -- Chain: build → copy compile_commands.json → launch editor
+    local cmd = string.format(
+        "%s && cp %s %s && env LD_LIBRARY_PATH=\"%s:$LD_LIBRARY_PATH\" %q %q",
+        build_cmd,
+        src_compile_db, dst_compile_db,
+        dxc_path,
+        editor_path, project_path
+    )
+
+    vim.cmd("split | terminal " .. cmd)
+end, {
+    nargs = 0,
+    desc = 'Full compile (with UHT) and launch Unreal Editor',
+})
+

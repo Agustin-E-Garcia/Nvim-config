@@ -18,6 +18,8 @@ require("lazy").setup({
     { "lewis6991/gitsigns.nvim" },
     { "nvim-tree/nvim-tree.lua" },
     { "folke/tokyonight.nvim" },
+    { "apyra/nvim-unity-sync" },
+    { "coder/claudecode.nvim" },
 })
 
 -- Plugin-specific config files
@@ -27,4 +29,6 @@ require("plugins.telescope")
 require("plugins.cmp")
 require("plugins.gitsigns")
 require("plugins.nvimtree")
+require("plugins.unitysync")
 require("plugins.tokyonight")
+require("plugins.claudecode")

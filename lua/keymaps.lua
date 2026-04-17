@@ -29,3 +29,8 @@ vim.api.nvim_create_autocmd('LspAttach', {
         map('n', '<leader>gi', '<cmd>Telescope lsp_implementations<cr>')
     end,
 })
+
+-- Claudecode
+map('n', '<leader>ca', '<cmd>ClaudeCode<cr>')
+map('n', '<leader>cf', '<cmd>ClaudeCodeFocus<cr>')
+
